@@ -1,0 +1,20 @@
+= semantic_form_for @event do |f|
+  = f.inputs do
+    = f.input :name
+    = f.input :location
+    = f.input :start_datetime, :as => :string, :input_html => { :class => "datetimepicker" }
+    = f.input :end_datetime,   :as => :string, :input_html => { :class => "datetimepicker" }
+    = f.input :description, :as => :text
+    = f.input :contact_name
+    = f.input :contact_email
+    = f.input :contact_phone
+    = f.input :event_type, :as => :radio, :collection => Event::Types::ALL
+    = f.input :ga_consensus_date, :as => :string, :input_html => { :class => "datepicker" }, :label => "Date of GA Consensus Decision", :hint => "Leave blank if this is not a consensed event."
+    - if user_signed_in?
+      = f.input :status, :as => :radio, :collection => Event::Status::ALL
+  = f.buttons
+:javascript
+  $(document).ready(function() {
+    $(".datetimepicker").datetimepicker({ ampm: true });
+    $(".datepicker").datepicker();
+  });

@@ -1,0 +1,20 @@
+!!!
+%html
+  %head
+    %title= ['Occupy Richmond Events', controller_name].join " | "
+    = stylesheet_link_tag    "application"
+    = javascript_include_tag "application"
+    = csrf_meta_tags
+%body
+  %h1= title
+  %ul.horizontal.top-panel
+    - if user_signed_in?
+      %li.name== Signed in as #{current_user.full_name}
+      %li.sign-out= link_to "Sign out", destroy_user_session_path, :method => :delete
+    - else
+      %li.sign-in= link_to "Sign in", new_user_session_path
+  - unless flash.nil? || flash.empty?
+    %ul#flash
+      - flash.each do |key, message|
+        %li{:class => key}= message
+  %content= yield

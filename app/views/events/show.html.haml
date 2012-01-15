@@ -1,0 +1,30 @@
+- @title = "View Event"
+%h2== #{@event.status.titleize} #{@event.event_type.gsub(/\sevent/i, "" )} Event: #{@event.name}
+%dl
+  %dt Date
+  %dd== #{@event.start_datetime} - #{@event.end_datetime}
+  %dt Location
+  %dd= @event.location
+  %dt Description
+  %dd= @event.description
+  - if user_signed_in?
+    %dt Contact
+    %dd
+      = mail_to @event.contact_name, @event.contact_email
+      == (#{@event.contact_phone})
+  - unless @event.ga_consensus_date.blank?
+    %dt GA Consensed on
+    %dd= @event.ga_consensus_date
+  - unless @event.facebook_id.blank?
+    %dt Facebook ID
+    %dd= @event.facebook_id
+  - unless @event.google_id.blank?
+    %dt Google Calendar ID
+    %dd= @event.google_id
+  - unless @event.twitter_id.blank?
+    %dt Twitter ID
+    %dd= @event.facebook_id    
+%ul.horizontal.footer
+  - if user_signed_in?
+    %li= link_to "Edit", edit_event_path(@event)
+  %li= link_to "Back", events_path
