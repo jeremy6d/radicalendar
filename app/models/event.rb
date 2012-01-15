@@ -81,21 +81,21 @@ private
   end
 
   def post_to_facebook!
-    app = FbGraph::Application.new Config.facebook.app_id
-    token = app.get_access_token Config.facebook.app_secret
-    page = FbGraph::Page.new(Config.facebook.page_id, :access_token => token).fetch
+    app = FbGraph::Application.new OrvaEvents::Config.facebook.app_id
+    token = app.get_access_token OrvaEvents::Config.facebook.app_secret
+    page = FbGraph::Page.new(OrvaEvents::Config.facebook.page_id, :access_token => token).fetch
     event = page.event!
   end
 
   def post_to_google_calendar!
     title = if official? 
-      Config.google.official_calendar_title
+      OrvaEvents::Config.google.official_calendar_title
     else  
-      Config.google.unofficial_calendar_title
+      OrvaEvents::Config.google.unofficial_calendar_title
     end
 
     service = GCal4Ruby::Service.new
-    service.authenticate(Config.google.username, Config.google.password)
+    service.authenticate(OrvaEvents::Config.google.username, OrvaEvents::Config.google.password)
     calendar = GCal4Ruby::Calendar.find(service, title).first
     
     event = GCal4Ruby::Event.new service

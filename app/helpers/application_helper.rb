@@ -11,5 +11,5 @@ module ApplicationHelper
           ( content_tag(:dd) { object.send(attr) } ) ].join
       end.join
     end
-  end
+  end 
 end
