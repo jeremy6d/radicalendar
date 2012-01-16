@@ -76,10 +76,10 @@ class Event
     contact_clause = 
     [ description, 
       "Contact #{contact_name} at #{contact_email} or #{contact_phone} for more information.",
-      "(posted from events.occupyrva.org)" ].join("\n\n")
+      "(Approved via events.occupyrva.org by #{approved_by.full_name})" ].join("\n\n")
   end
 
-  def approve!
+  def approve! user
     post_to_google_calendar!
 
     if official?
@@ -88,14 +88,16 @@ class Event
       #kickoff_email_alert!
     end
 
+    write_attribute :approver_id, user.id
     write_attribute :status, Event::Status::APPROVED
     write_attribute :approved_at, Time.now
 
     save!
   end
 
-  def dismiss!
-    update_attributes :status => Event::Status::DENIED
+  def dismiss! user
+    write_attribute :approver_id, user.id
+    write_attribute :status, Event::Status::DENIED
   end
 
 private

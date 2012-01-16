@@ -15,6 +15,12 @@
   - unless @event.ga_consensus_date.blank?
     %dt GA Consensed on
     %dd= @event.ga_consensus_date
+  - if @event.approver
+    %dt== Event #{@event.status} by
+    %dd= @event.approver.full_name
+  - if @event.approved_at
+    %dt== Event #{@event.status} on
+    %dd= @event.approved_at
   - unless @event.facebook_id.blank?
     %dt Facebook ID
     %dd= @event.facebook_id
@@ -23,7 +29,7 @@
     %dd= @event.google_id
   - unless @event.twitter_id.blank?
     %dt Twitter ID
-    %dd= @event.facebook_id    
+    %dd= @event.facebook_id
 %ul.horizontal.footer
   - if user_signed_in?
     %li= link_to "Edit", edit_event_path(@event)

@@ -5,14 +5,14 @@ class EventsController < ApplicationController
 
   def approve
     @event = collection.find params[:event_id]
-    @event.approve!
+    @event.approve! current_user
     EventMailer.status_change_email(@event).deliver!
     redirect_to event_path(@event), :notice => "Event was approved."
   end
 
   def dismiss
     @event = collection.find params[:event_id]
-    @event.dismiss!
+    @event.dismiss! current_user
     EventMailer.status_change_email(@event).deliver!
     redirect_to event_path(@event), :notice => "Event was dismissed."
   end
