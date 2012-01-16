@@ -1,4 +1,5 @@
 = semantic_form_for @event do |f|
+  = render "shared/error_messages", :target => @event
   = f.inputs do
     = f.input :name
     = f.input :location
@@ -8,10 +9,9 @@
     = f.input :contact_name
     = f.input :contact_email
     = f.input :contact_phone
-    = f.input :event_type, :as => :radio, :collection => Event::Types::ALL
+    = f.input :workgroup_name, :hint => "Provide this if this is a workgroup event"
+    = f.input :event_type, :as => :radio, :collection => Event::Types::ALL, :hint => "Unofficial events will only be posted to the secondary Google calendar. Official events will go to the official Google calendar as well as Facebook and Twitter. Special Events should reference a GA date, and the minutes of the GA should be double-checked to confirm this was a consensus decision."
     = f.input :ga_consensus_date, :as => :string, :input_html => { :class => "datepicker" }, :label => "Date of GA Consensus Decision", :hint => "Leave blank if this is not a consensed event."
-    - if user_signed_in?
-      = f.input :status, :as => :radio, :collection => Event::Status::ALL
   = f.buttons
 :javascript
   $(document).ready(function() {

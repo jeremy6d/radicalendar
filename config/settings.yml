@@ -6,8 +6,8 @@ google:
 facebook:
   app_id: 261926577206981
   app_secret: c55c84feffe5ac157e054e3cd98727f2
-  page_id: 338029346215136
-  #237712702942989
+  page_id: 237712702942989
+  app_token: AAADuOIiXdsUBAD6pk37Ld5iHM1ZCmLoDCH21jnH8JlJiFJ21Gv6HuqEYDQpBXnOlJ32a7LnxxEGzLxQDuRkG0LJY5kWGdKIrr2tUvZBgZDZD
 twitter:
   consumer_key: JZnVhol9SGo2qembTCpWQ
   consumer_secret: 9kpjqUTcDHXfDOFvBaJ0vSXQa1QWMeaDAzNNvPM

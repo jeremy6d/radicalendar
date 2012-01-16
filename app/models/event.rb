@@ -4,13 +4,13 @@ class Event
 
   module Types
     ALL = [ SPECIAL_EVENT = "Special Event",
-            WORKGROUP = "Workgroup",
-            UNOFFICIAL = "Unofficial" ]
+            WORKGROUP_EVENT = "Workgroup Event",
+            UNOFFICIAL_EVENT = "Unofficial Event" ]
   end
 
   module Status
     ALL = [ APPROVED = "Approved",
-            UNAPPROVED = "Unapproved",
+            DENIED = "Denied",
             PENDING = "Pending" ]
   end
 
@@ -27,14 +27,24 @@ class Event
   field :google_id, :type => String
   field :twitter_id, :type => String
   field :status, :type => String, :default => Event::Status::PENDING
-  field :event_type, :type => String, :default => Event::Types::UNOFFICIAL
+  field :approved_at, :type => Time
+  field :event_type, :type => String, :default => Event::Types::UNOFFICIAL_EVENT
+  field :workgroup_name, :type => String
+
+  attr_protected :approved_at
+
+  belongs_to :approver, :class_name => "User"
 
   validates_presence_of :name, :location, :start_datetime, :end_datetime,
                         :description, :contact_name, :contact_email, 
                         :contact_phone, :status, :event_type
 
-  before_save :export!, :if => :just_approved?
-
+  validates_presence_of :ga_consensus_date, :if => Proc.new { |e| e.special_event? },
+                                            :message => "is a required field for special events"
+  
+  validates_presence_of :workgroup_name, :if => Proc.new { |e| e.workgroup_event? },
+                                         :message => "is a required field for workgroup events"
+  
   default_scope asc(:start_datetime)
 
   def ga_consensed?
@@ -42,17 +52,8 @@ class Event
   end
 
   def official?
-    event_type != Types::UNOFFICIAL
+    event_type != Types::UNOFFICIAL_EVENT
   end
-
-  # %w(start end ga_consensed).each do |prefix|
-  #   attr_name = "#{prefix}_datetime"
-  #   method_name = "#{attr_name}="
-  #   define_method method_name.to_sym do |datetime|
-  #     debugger
-  #     write_attribute attr_name, Time.parse(datetime)
-  #   end
-  # end
 
   Event::Status::ALL.each do |status_word|
     symbol = status_word.underscore.downcase.to_sym
@@ -62,29 +63,51 @@ class Event
     end
   end
 
-  def full_description
-    contact_clause = "Contact #{contact_name} at #{contact_email} or #{contact_phone} for more information."
-    [ description, contact_clause ].join("\n\n")
+  Event::Types::ALL.each do |type_word|
+    symbol = type_word.gsub(" ", "_").downcase.to_sym
+    scope symbol, where(:event_type => type_word)
+    define_method "#{symbol}?".to_sym do
+      event_type == type_word
+    end
   end
 
-private
-  def export!
+
+  def full_description
+    contact_clause = 
+    [ description, 
+      "Contact #{contact_name} at #{contact_email} or #{contact_phone} for more information.",
+      "(posted from events.occupyrva.org)" ].join("\n\n")
+  end
+
+  def approve!
     post_to_google_calendar!
 
     if official?
       post_to_facebook! 
       post_to_twitter!
-      kickoff_email_alert!
+      #kickoff_email_alert!
     end
 
-    approved_at = Time.now
+    write_attribute :status, Event::Status::APPROVED
+    write_attribute :approved_at, Time.now
+
+    save!
   end
 
+  def dismiss!
+    update_attributes :status => Event::Status::DENIED
+  end
+
+private
   def post_to_facebook!
-    app = FbGraph::Application.new OrvaEvents::Config.facebook.app_id
-    token = app.get_access_token OrvaEvents::Config.facebook.app_secret
-    page = FbGraph::Page.new(OrvaEvents::Config.facebook.page_id, :access_token => token).fetch
-    event = page.event!
+    user = FbGraph::User.me OrvaEvents::Config.facebook.app_token
+    page = user.accounts.find { |a| a.name == "Occupy Richmond" }
+    event = page.event! :name => name,
+                :description => description,
+                :start_time => time_obj_for(start_datetime),
+                :end_time => time_obj_for(end_datetime),
+                :location => location
+    write_attribute :facebook_id, event.identifier
   end
 
   def post_to_google_calendar!
@@ -95,7 +118,8 @@ private
     end
 
     service = GCal4Ruby::Service.new
-    service.authenticate(OrvaEvents::Config.google.username, OrvaEvents::Config.google.password)
+    service.authenticate OrvaEvents::Config.google.username, 
+                         OrvaEvents::Config.google.password
     calendar = GCal4Ruby::Calendar.find(service, title).first
     
     event = GCal4Ruby::Event.new service
@@ -107,12 +131,13 @@ private
     event.content = full_description
     
     event.save
-    debugger
-    google_id = event.id
+    
+    write_attribute :google_id, event.id
   end
 
   def post_to_twitter!
-    Twitter.update "New event: #{}"
+    result = Twitter.update "New event: #{name} http://facebook.com/#{facebook_id}"
+    write_attribute :twitter_id, result.id.to_s
   end
 
   def kickoff_email_alert!

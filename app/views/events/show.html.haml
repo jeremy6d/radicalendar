@@ -27,4 +27,6 @@
 %ul.horizontal.footer
   - if user_signed_in?
     %li= link_to "Edit", edit_event_path(@event)
+    %li= link_to "Approve", event_approve_path(@event), :method => :put
+    %li= link_to "Dismiss", event_dismiss_path(@event), :method => :put
   %li= link_to "Back", events_path

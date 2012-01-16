@@ -1,0 +1,11 @@
+- if target.errors.any?
+  #errorExplanation
+    %h3
+      = pluralize(target.errors.count, "error")
+      prohibited this 
+      = target.class.name.humanize.downcase
+      from being saved 
+    %ul
+      - target.errors.full_messages.each do |msg|
+        %li
+          = msg
