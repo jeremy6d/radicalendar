@@ -103,7 +103,7 @@ private
     user = FbGraph::User.me OrvaEvents::Config.facebook.app_token
     page = user.accounts.find { |a| a.name == "Occupy Richmond" }
     event = page.event! :name => name,
-                :description => description,
+                :description => full_description,
                 :start_time => time_obj_for(start_datetime),
                 :end_time => time_obj_for(end_datetime),
                 :location => location
