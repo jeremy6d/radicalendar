@@ -76,7 +76,7 @@ class Event
     contact_clause = 
     [ description, 
       "Contact #{contact_name} at #{contact_email} or #{contact_phone} for more information.",
-      "(Approved via events.occupyrva.org by #{approved_by.full_name})" ].join("\n\n")
+      "(Approved via events.occupyrva.org by #{approver.full_name})" ].join("\n\n")
   end
 
   def approve! user
