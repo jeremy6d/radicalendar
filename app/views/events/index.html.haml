@@ -14,6 +14,6 @@
       %td= "Consensed" if event.ga_consensed?
 
 %ul.horizontal.footer
-  - (Event::Status::ALL - @status).each do |status|
-    %li= link_to status, event_filtered_path(status)
+  - (Event::Status::ALL - [@status]).each do |status|
+    %li= link_to status, filtered_events_path(:status => status)
   %li= link_to "Submit new event", new_event_path 

@@ -2,9 +2,13 @@ OrvaEvents::Application.routes.draw do
   devise_for :users
   resources :users
   resources :events do
-    put :approve
-    put :dismiss
-    get '/:status' => 'events#index', :as => 'filtered'
+    member do
+      put :approve
+      put :dismiss
+    end
+    collection do
+      get 'filter/:status' => 'events#index', :as => 'filtered'
+    end
   end
 
   root :to => 'events#index'
