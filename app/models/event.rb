@@ -2,8 +2,6 @@ class Event
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  DEBUG = true
-
   module Types
     ALL = [ SPECIAL_EVENT = "Special Event",
             WORKGROUP_EVENT = "Workgroup Event",
@@ -86,7 +84,7 @@ class Event
     write_attribute :status, Event::Status::APPROVED
     write_attribute :approved_at, Time.now
 
-    if Rails.env.production? && !DEBUG
+    if Rails.env.production? && !ENV['DEBUG']
       post_to_google_calendar!
 
       if official?
