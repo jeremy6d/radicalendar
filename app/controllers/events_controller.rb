@@ -3,6 +3,12 @@ class EventsController < ApplicationController
   custom_actions :resource => [ :approve, :dismiss ]
   before_filter :authenticate_user!, :only => [ :edit, :update ]
 
+  def index
+    @status = params[:status] if Event::Status::ALL.include?(params[:status])
+    @status ||= Event::Status::PENDING
+    @events = collection.send(@status.to_sym)
+  end
+
   def approve
     @event = collection.find params[:event_id]
     @event.approve! current_user

@@ -1,4 +1,4 @@
-- @title = "Pending Approval"
+- @title = @status
 
 %table
   %th Event Name
@@ -6,7 +6,7 @@
   %th Type
   %th GA Consensed
 
-  - @events.pending.each do |event|
+  - @events.each do |event|
     %tr
       %td= link_to event.name, event_path(event)
       %td== #{event.start_datetime} - #{event.end_datetime}
@@ -14,4 +14,6 @@
       %td= "Consensed" if event.ga_consensed?
 
 %ul.horizontal.footer
+  - (Event::Status::ALL - @status).each do |status|
+    %li= link_to status, event_filtered_path(status)
   %li= link_to "Submit new event", new_event_path 
