@@ -6,7 +6,7 @@ class EventsController < ApplicationController
   def index
     @status = params[:status] if Event::Status::ALL.include?(params[:status])
     @status ||= Event::Status::PENDING
-    @events = collection.send(@status.to_sym)
+    @events = collection.send(@status.downcase.to_sym)
   end
 
   def approve
