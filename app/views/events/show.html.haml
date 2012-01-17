@@ -30,6 +30,10 @@
   - unless @event.twitter_id.blank?
     %dt Twitter ID
     %dd= @event.facebook_id
+  %dt Submission Date
+  %dd= @event.created_at
+  %dt Last Updated
+  %dd= @event.updated_at
 %ul.horizontal.footer
   - if user_signed_in?
     %li= link_to "Edit", edit_event_path(@event)
