@@ -35,4 +35,6 @@
     %li= link_to "Edit", edit_event_path(@event)
     %li= link_to "Approve", approve_event_path(@event), :method => :put
     %li= link_to "Dismiss", dismiss_event_path(@event), :method => :put
+    - if current_user.superadmin?
+      %li= link_to "Delete", event_path(@event), :method => :delete
   %li= link_to "Back", events_path
