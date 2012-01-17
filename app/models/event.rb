@@ -80,12 +80,14 @@ class Event
   end
 
   def approve! user
-    post_to_google_calendar!
+    if Rails.env.production?
+      post_to_google_calendar!
 
-    if official?
-      post_to_facebook! 
-      post_to_twitter!
-      #kickoff_email_alert!
+      if official?
+        post_to_facebook! 
+        post_to_twitter!
+        #kickoff_email_alert!
+      end
     end
 
     write_attribute :approver_id, user.id
