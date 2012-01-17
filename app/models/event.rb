@@ -2,6 +2,8 @@ class Event
   include Mongoid::Document
   include Mongoid::Timestamps
 
+  DEBUG = true
+
   module Types
     ALL = [ SPECIAL_EVENT = "Special Event",
             WORKGROUP_EVENT = "Workgroup Event",
@@ -76,11 +78,15 @@ class Event
     contact_clause = 
     [ description, 
       "Contact #{contact_name} at #{contact_email} or #{contact_phone} for more information.",
-      "(Approved via events.occupyrva.org by #{approver.full_name})" ].join("\n\n")
+      "(Approved via events.occupyrva.org by #{approver.try(:full_name) || 'an unknown Media workgroup member'})" ].join("\n\n")
   end
 
   def approve! user
-    if Rails.env.production?
+    write_attribute :approver_id, user.id
+    write_attribute :status, Event::Status::APPROVED
+    write_attribute :approved_at, Time.now
+
+    if Rails.env.production? && !DEBUG
       post_to_google_calendar!
 
       if official?
@@ -89,10 +95,6 @@ class Event
         #kickoff_email_alert!
       end
     end
-
-    write_attribute :approver_id, user.id
-    write_attribute :status, Event::Status::APPROVED
-    write_attribute :approved_at, Time.now
 
     save!
   end
