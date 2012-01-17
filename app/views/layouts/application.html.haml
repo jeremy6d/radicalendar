@@ -17,4 +17,4 @@
     %ul#flash
       - flash.each do |key, message|
         %li{:class => key}= message
-  %content= yield
+  %content.centered= yield
