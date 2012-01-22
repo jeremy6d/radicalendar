@@ -47,6 +47,8 @@ class Event
   
   default_scope asc(:start_datetime)
 
+  alias_method :title, :name
+
   def ga_consensed?
     !ga_consensus_date.blank?
   end

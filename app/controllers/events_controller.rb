@@ -22,6 +22,15 @@ class EventsController < ApplicationController
     EventMailer.status_change_email(@event).deliver!
     redirect_to event_path(@event), :notice => "Event was dismissed."
   end
+  
+  def create
+    create! do |success, failure|
+      success.html do
+        EventMailer.new_event_email(@event).deliver!
+        redirect_to root_path, :notice => "Your event was submitted and the Media workgroup has been notified."
+      end
+    end
+  end
 
 protected
   def collection

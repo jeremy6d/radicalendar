@@ -10,7 +10,7 @@
   - if user_signed_in?
     %dt Contact
     %dd
-      = mail_to @event.contact_name, @event.contact_email
+      = mail_to @event.contact_email, @event.contact_name, :encode => :javascript, :subject => @event.name
       == (#{@event.contact_phone})
   - unless @event.ga_consensus_date.blank?
     %dt GA Consensed on

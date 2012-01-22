@@ -1,0 +1,16 @@
+A new <%= @event.event_type.downcase %> has been submitted:
+
+Contact: <%= mail_to @event.contact_email, @event.contact_name %> (<%= @event.contact_phone %>)
+Title: <%= @event.title %>
+When: <%= @event.start_datetime %> - <%= @event.end_datetime %>
+Where: <%= @event.location %>
+Description: <%= @event.description %>
+<% unless @event.workgroup_name.blank? %>
+Workgroup: <%= @event.workgroup_name %>
+<% end %>
+<% unless @event.ga_consensus_date.blank? %>
+Date of GA Consensus: <%= @event.ga_consensus_date %>
+<% end %>
+
+To review this event, navigate to:
+<%= event_url @event, :host => "events.occupyrva.org" %>
